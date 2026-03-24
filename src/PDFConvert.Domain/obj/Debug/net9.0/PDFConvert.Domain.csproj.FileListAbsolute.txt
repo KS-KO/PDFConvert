@@ -1,0 +1,12 @@
+C:\Project\PDFConvert\src\PDFConvert.Domain\bin\Debug\net9.0\PDFConvert.Domain.deps.json
+C:\Project\PDFConvert\src\PDFConvert.Domain\bin\Debug\net9.0\PDFConvert.Domain.dll
+C:\Project\PDFConvert\src\PDFConvert.Domain\bin\Debug\net9.0\PDFConvert.Domain.pdb
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.AssemblyInfoInputs.cache
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.AssemblyInfo.cs
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.csproj.CoreCompileInputs.cache
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.sourcelink.json
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.dll
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\refint\PDFConvert.Domain.dll
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\PDFConvert.Domain.pdb
+C:\Project\PDFConvert\src\PDFConvert.Domain\obj\Debug\net9.0\ref\PDFConvert.Domain.dll

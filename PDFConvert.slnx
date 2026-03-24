@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PDFConvert.App/PDFConvert.App.csproj" />
+    <Project Path="src/PDFConvert.Application/PDFConvert.Application.csproj" />
+    <Project Path="src/PDFConvert.Domain/PDFConvert.Domain.csproj" />
+    <Project Path="src/PDFConvert.Infrastructure/PDFConvert.Infrastructure.csproj" />
+    <Project Path="src/PDFConvert.Presentation/PDFConvert.Presentation.csproj" />
+    <Project Path="Tests/PDFConvert.Tests/PDFConvert.Tests.csproj" />
+  </Folder>
+</Solution>

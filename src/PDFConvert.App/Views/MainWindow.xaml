@@ -1,0 +1,238 @@
+<Window x:Class="PDFConvert.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="PDF Converter"
+        Width="900"
+        Height="620"
+        MinWidth="760"
+        MinHeight="540"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock FontSize="26"
+                       FontWeight="SemiBold"
+                       Text="PDF to Office/Slides Converter" />
+            <TextBlock Margin="0,8,0,0"
+                       Foreground="#5F6B7A"
+                       Text=".NET 9 x64 PDF conversion program based on WPF MVVM" />
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*" />
+                <ColumnDefinition Width="24" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Padding="20"
+                    Background="#F5F7FA"
+                    BorderBrush="#D8DEE6"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                <StackPanel>
+                    <TextBlock FontSize="18"
+                               FontWeight="SemiBold"
+                               Text="1. Select PDF" />
+                    <TextBlock Margin="0,14,0,4"
+                               Text="Selected file" />
+                    <TextBlock FontWeight="SemiBold"
+                               Text="{Binding SelectedPdfName}" />
+                    <TextBlock Margin="0,12,0,0"
+                               Foreground="#5F6B7A"
+                               TextWrapping="Wrap"
+                               Text="{Binding SelectedPdfPath}" />
+
+                    <Button Margin="0,20,0,0"
+                            Padding="14,10"
+                            HorizontalAlignment="Left"
+                            Command="{Binding BrowseFileCommand}"
+                            Content="Select PDF File" />
+
+                    <TextBlock Margin="0,18,0,4"
+                               Text="Output folder" />
+                    <TextBlock Foreground="#5F6B7A"
+                               TextWrapping="Wrap"
+                               Text="{Binding SelectedOutputDirectory}" />
+                    <Button Margin="0,12,0,0"
+                            Padding="14,10"
+                            HorizontalAlignment="Left"
+                            Command="{Binding BrowseOutputFolderCommand}"
+                            Content="Select Output Folder" />
+
+                    <CheckBox Margin="0,20,0,0"
+                              IsChecked="{Binding UseOcr}"
+                              Content="Use OCR" />
+                    <StackPanel Margin="0,12,0,0"
+                                IsEnabled="{Binding UseOcr}">
+                        <TextBlock Margin="0,0,0,4"
+                                   Text="OCR engine" />
+                        <ComboBox Width="240"
+                                  ItemsSource="{Binding OcrEngines}"
+                                  SelectedItem="{Binding SelectedOcrEngine, Mode=TwoWay}"
+                                  DisplayMemberPath="DisplayName" />
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Google Vision API Key" />
+                        <TextBox Width="240"
+                                 Text="{Binding GoogleVisionApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Naver Clova Endpoint" />
+                        <TextBox Width="240"
+                                 Text="{Binding NaverClovaEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Margin="0,12,0,4"
+                                   Text="Naver Clova Secret" />
+                        <TextBox Width="240"
+                                 Text="{Binding NaverClovaSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="0,12,0,0"
+                                Padding="12,8"
+                                HorizontalAlignment="Left"
+                                Command="{Binding SaveOcrSettingsCommand}"
+                                Content="Save OCR Settings" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Padding="20"
+                    Background="#FFF9F2"
+                    BorderBrush="#E7D9C7"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                <StackPanel>
+                    <TextBlock FontSize="18"
+                               FontWeight="SemiBold"
+                               Text="2. Select Output Formats" />
+
+                    <ItemsControl Margin="0,16,0,0"
+                                  ItemsSource="{Binding OutputFormats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="0,0,0,12"
+                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                          Content="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Button Margin="0,20,0,0"
+                            Padding="14,10"
+                            HorizontalAlignment="Left"
+                            Command="{Binding StartConversionCommand}"
+                            Content="Start Conversion" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="4"
+                Padding="20"
+                Background="#F8FBF8"
+                BorderBrush="#D5E3D2"
+                BorderThickness="1"
+                CornerRadius="12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0">
+                    <TextBlock FontSize="18"
+                               FontWeight="SemiBold"
+                               Text="Status" />
+                    <ProgressBar Margin="0,14,0,0"
+                                 Height="18"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Value="{Binding ProgressValue, Mode=OneWay}" />
+                    <TextBlock Margin="0,12,0,0"
+                               Text="{Binding StatusMessage}" />
+                    <TextBlock Margin="0,8,0,0"
+                               Foreground="#5F6B7A"
+                               TextWrapping="Wrap"
+                               Text="{Binding ResultSummary}" />
+
+                    <Button Margin="0,14,0,0"
+                            Padding="14,10"
+                            HorizontalAlignment="Left"
+                            Command="{Binding OpenOutputFolderCommand}"
+                            Content="Open Output Folder" />
+
+                    <TextBlock Margin="0,16,0,6"
+                               FontWeight="SemiBold"
+                               Text="Generated Files" />
+                    <ItemsControl ItemsSource="{Binding GeneratedFiles}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="0,0,0,4"
+                                           Text="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Margin="0,14,0,6"
+                               FontWeight="SemiBold"
+                               Text="Warnings" />
+                    <ItemsControl ItemsSource="{Binding Warnings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="0,0,0,4"
+                                           Foreground="#A16207"
+                                           Text="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Margin="0,14,0,6"
+                               FontWeight="SemiBold"
+                               Text="Recent Conversions" />
+                    <ItemsControl ItemsSource="{Binding RecentConversions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,8"
+                                        Padding="10"
+                                        Background="#FFFFFF"
+                                        BorderBrush="#D8DEE6"
+                                        BorderThickness="1"
+                                        CornerRadius="8">
+                                    <StackPanel>
+                                        <TextBlock FontWeight="SemiBold"
+                                                   Text="{Binding SourceFileName}" />
+                                        <TextBlock Foreground="#5F6B7A"
+                                                   Text="{Binding Summary}" />
+                                        <TextBlock Foreground="#5F6B7A"
+                                                   Text="{Binding OutputDirectory}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <Border Grid.Row="2"
+                        Padding="10,8"
+                        Background="#EDF3F7"
+                        BorderBrush="#D8DEE6"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                    <DockPanel LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Right"
+                                   HorizontalAlignment="Right"
+                                   FontWeight="SemiBold"
+                                   Text="{Binding GitVersionDisplay}" />
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

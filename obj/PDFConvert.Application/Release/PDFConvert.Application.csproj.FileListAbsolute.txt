@@ -1,0 +1,14 @@
+C:\Project\PDFConvert\bin\Release\PDFConvert.Application.deps.json
+C:\Project\PDFConvert\bin\Release\PDFConvert.Application.dll
+C:\Project\PDFConvert\bin\Release\PDFConvert.Application.pdb
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.csproj.AssemblyReference.cache
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.AssemblyInfoInputs.cache
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.AssemblyInfo.cs
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.csproj.CoreCompileInputs.cache
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.sourcelink.json
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConve.E3DC96B2.Up2Date
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.dll
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\refint\PDFConvert.Application.dll
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\PDFConvert.Application.pdb
+C:\Project\PDFConvert\obj\PDFConvert.Application\Release\ref\PDFConvert.Application.dll

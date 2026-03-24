@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PDFConvert.Application\PDFConvert.Application.csproj" />
+    <ProjectReference Include="..\PDFConvert.Infrastructure\PDFConvert.Infrastructure.csproj" />
+    <ProjectReference Include="..\PDFConvert.Presentation\PDFConvert.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\tools\tesseract\**\*">
+      <TargetPath>tools\tesseract\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

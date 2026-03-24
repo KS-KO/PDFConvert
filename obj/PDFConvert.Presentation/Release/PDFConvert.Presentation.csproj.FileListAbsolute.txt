@@ -1,0 +1,14 @@
+C:\Project\PDFConvert\bin\Release\PDFConvert.Presentation.deps.json
+C:\Project\PDFConvert\bin\Release\PDFConvert.Presentation.dll
+C:\Project\PDFConvert\bin\Release\PDFConvert.Presentation.pdb
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.csproj.AssemblyReference.cache
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.GeneratedMSBuildEditorConfig.editorconfig
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.AssemblyInfoInputs.cache
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.AssemblyInfo.cs
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.csproj.CoreCompileInputs.cache
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.sourcelink.json
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConve.C6320DB9.Up2Date
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.dll
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\refint\PDFConvert.Presentation.dll
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\PDFConvert.Presentation.pdb
+C:\Project\PDFConvert\obj\PDFConvert.Presentation\Release\ref\PDFConvert.Presentation.dll
