@@ -49,6 +49,30 @@ internal sealed class CompositeOcrImageTextRecognizer
         return await RecognizeWithAutoAsync(imageBytes, cancellationToken);
     }
 
+    public async Task<OcrPageLayout?> RecognizeLayoutAsync(
+        byte[] imageBytes,
+        OcrEngineKind engineKind,
+        CancellationToken cancellationToken = default)
+    {
+        if (imageBytes.Length == 0)
+        {
+            return null;
+        }
+
+        if (engineKind is OcrEngineKind.WindowsKoreanPreferred or OcrEngineKind.WindowsEnglishPreferred)
+        {
+            return await _windowsRecognizer.RecognizeLayoutAsync(imageBytes, engineKind, cancellationToken);
+        }
+
+        var koreanLayout = await _windowsRecognizer.RecognizeLayoutAsync(imageBytes, OcrEngineKind.WindowsKoreanPreferred, cancellationToken);
+        if (koreanLayout is not null)
+        {
+            return koreanLayout;
+        }
+
+        return await _windowsRecognizer.RecognizeLayoutAsync(imageBytes, OcrEngineKind.WindowsEnglishPreferred, cancellationToken);
+    }
+
     private async Task<string?> RecognizeWithAutoAsync(byte[] imageBytes, CancellationToken cancellationToken)
     {
         var autoOrder = new[]

@@ -1,9 +1,3 @@
-C:\Project\PDFConvert\bin\Debug\tools\tesseract\README.md
-C:\Project\PDFConvert\bin\Debug\PDFConvert.App.exe
-C:\Project\PDFConvert\bin\Debug\PDFConvert.App.deps.json
-C:\Project\PDFConvert\bin\Debug\PDFConvert.App.runtimeconfig.json
-C:\Project\PDFConvert\bin\Debug\PDFConvert.App.dll
-C:\Project\PDFConvert\bin\Debug\PDFConvert.App.pdb
 C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.csproj.AssemblyReference.cache
 C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\Views\MainWindow.baml
 C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\Views\MainWindow.g.cs
@@ -16,9 +10,3 @@ C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.AssemblyInfoIn
 C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.AssemblyInfo.cs
 C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.csproj.CoreCompileInputs.cache
 C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.sourcelink.json
-C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConve.6C472224.Up2Date
-C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.dll
-C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\refint\PDFConvert.App.dll
-C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.pdb
-C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\PDFConvert.App.genruntimeconfig.cache
-C:\Project\PDFConvert\obj\PDFConvert.App\x64\Debug\ref\PDFConvert.App.dll

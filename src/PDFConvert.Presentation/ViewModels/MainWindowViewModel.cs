@@ -62,7 +62,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
         OutputFormats = new ObservableCollection<OutputFormatOptionViewModel>
         {
-            new(OutputFormat.Pptx, "PPTX", isSelected: true),
+            new(OutputFormat.Pptx, "PPT", isSelected: true),
+            new(OutputFormat.Pptx, "PPTX"),
             new(OutputFormat.Docx, "DOCX"),
             new(OutputFormat.Doc, "DOC"),
             new(OutputFormat.GoogleSlides, "Google Slides"),
@@ -230,13 +231,33 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private Task BrowseFileAsync()
     {
-        var selectedPath = _fileDialogService.PickPdfFile();
-
-        if (!string.IsNullOrWhiteSpace(selectedPath))
+        try
         {
+            var selectedPath = _fileDialogService.PickPdfFile(GetInitialPdfDirectory());
+            if (string.IsNullOrWhiteSpace(selectedPath))
+            {
+                return Task.CompletedTask;
+            }
+
             SelectedPdfPath = selectedPath;
-            _recentPathStore.SaveLastSelectedPdfPath(selectedPath);
+
+            try
+            {
+                _recentPathStore.SaveLastSelectedPdfPath(selectedPath);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "PDF 파일은 선택되었지만 최근 경로 저장에 실패했습니다.";
+                ResultSummary = ex.Message;
+                return Task.CompletedTask;
+            }
+
             StatusMessage = "변환할 PDF 파일을 선택했습니다.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = "PDF 파일 선택 중 오류가 발생했습니다.";
+            ResultSummary = ex.Message;
         }
 
         return Task.CompletedTask;
@@ -244,14 +265,35 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private Task BrowseOutputFolderAsync()
     {
-        var selectedPath = _fileDialogService.PickOutputFolder(SelectedOutputDirectory);
-
-        if (!string.IsNullOrWhiteSpace(selectedPath))
+        try
         {
+            var selectedPath = _fileDialogService.PickOutputFolder(SelectedOutputDirectory);
+            if (string.IsNullOrWhiteSpace(selectedPath))
+            {
+                return Task.CompletedTask;
+            }
+
             SelectedOutputDirectory = selectedPath;
-            _recentPathStore.SaveLastSelectedOutputDirectory(selectedPath);
+
+            try
+            {
+                _recentPathStore.SaveLastSelectedOutputDirectory(selectedPath);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "출력 폴더는 선택되었지만 최근 경로 저장에 실패했습니다.";
+                ResultSummary = ex.Message;
+                OnStateChanged();
+                return Task.CompletedTask;
+            }
+
             StatusMessage = "결과 저장 폴더를 선택했습니다.";
             OnStateChanged();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = "출력 폴더 선택 중 오류가 발생했습니다.";
+            ResultSummary = ex.Message;
         }
 
         return Task.CompletedTask;
@@ -275,6 +317,7 @@ public sealed class MainWindowViewModel : ObservableObject
             var selectedFormats = OutputFormats
                 .Where(item => item.IsSelected)
                 .Select(item => item.Format)
+                .Distinct()
                 .ToArray();
 
             var job = new ConversionJob
@@ -374,5 +417,19 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             RecentConversions.RemoveAt(RecentConversions.Count - 1);
         }
+    }
+
+    private string? GetInitialPdfDirectory()
+    {
+        if (!string.IsNullOrWhiteSpace(SelectedPdfPath))
+        {
+            var selectedPdfDirectory = Path.GetDirectoryName(SelectedPdfPath);
+            if (!string.IsNullOrWhiteSpace(selectedPdfDirectory))
+            {
+                return selectedPdfDirectory;
+            }
+        }
+
+        return SelectedOutputDirectory;
     }
 }

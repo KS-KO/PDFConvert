@@ -27,7 +27,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ksko\\.nuget\\packages\\": {},
+    "c:\\Project\\PDFConvert\\.dotnet\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -36,7 +36,7 @@
       "projectUniqueName": "C:\\Project\\PDFConvert\\src\\PDFConvert.Application\\PDFConvert.Application.csproj",
       "projectName": "PDFConvert.Application",
       "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Application\\PDFConvert.Application.csproj",
-      "packagesPath": "C:\\Users\\ksko\\.nuget\\packages\\",
+      "packagesPath": "c:\\Project\\PDFConvert\\.dotnet\\.nuget\\packages\\",
       "outputPath": "C:\\Project\\PDFConvert\\obj\\PDFConvert.Application\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [

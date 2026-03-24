@@ -4,6 +4,10 @@ namespace PDFConvert.Infrastructure.Extraction;
 
 internal static partial class OcrTextPostProcessor
 {
+    private static readonly Regex NotebookLmRegex = new(@"\bNotebookLM\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex SeparatorRegex = new(@"^[-=_.|\s]+$", RegexOptions.Compiled);
+    private static readonly Regex MultiWhitespaceRegex = new(@"\s{2,}", RegexOptions.Compiled);
+
     public static string Clean(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -25,22 +29,13 @@ internal static partial class OcrTextPostProcessor
 
     private static string RemoveWatermark(string line)
     {
-        var cleaned = NotebookLmPattern().Replace(line, string.Empty).Trim();
-        cleaned = SeparatorPattern().Replace(cleaned, string.Empty).Trim();
+        var cleaned = NotebookLmRegex.Replace(line, string.Empty).Trim();
+        cleaned = SeparatorRegex.Replace(cleaned, string.Empty).Trim();
         return cleaned;
     }
 
     private static string CollapseWhitespace(string line)
     {
-        return MultiWhitespacePattern().Replace(line, " ").Trim();
+        return MultiWhitespaceRegex.Replace(line, " ").Trim();
     }
-
-    [GeneratedRegex(@"\bNotebookLM\b", RegexOptions.IgnoreCase | RegexOptions.Compiled)]
-    private static partial Regex NotebookLmPattern();
-
-    [GeneratedRegex(@"^[-=_.|\s]+$", RegexOptions.Compiled)]
-    private static partial Regex SeparatorPattern();
-
-    [GeneratedRegex(@"\s{2,}", RegexOptions.Compiled)]
-    private static partial Regex MultiWhitespacePattern();
 }

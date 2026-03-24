@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Packaging;
 using PDFConvert.Application.Services;
 using PDFConvert.Domain.Entities;
 using PDFConvert.Domain.Enums;
@@ -14,7 +15,7 @@ public sealed class PptxConversionVerificationTests
     public async Task ConvertAsync_Creates_Pptx_From_Sample_Pdf()
     {
         var repositoryRoot = ResolveRepositoryRoot();
-        var sourcePdfPath = Path.Combine(repositoryRoot, "DOC", "LASER1205_Architecture_and_Safety.pdf");
+        var sourcePdfPath = ResolveSamplePdfPath(repositoryRoot);
         Assert.True(File.Exists(sourcePdfPath), $"Sample PDF not found: {sourcePdfPath}");
 
         var outputDirectory = Path.Combine(repositoryRoot, "DOC", "verification_output_pptx");
@@ -49,6 +50,11 @@ public sealed class PptxConversionVerificationTests
             Assert.Single(result.OutputArtifacts);
             Assert.True(File.Exists(outputPath), $"PPTX output not found: {outputPath}");
             Assert.True(new FileInfo(outputPath).Length > 0, "PPTX output file is empty.");
+
+            using var presentation = PresentationDocument.Open(outputPath, false);
+            Assert.NotNull(presentation.PresentationPart);
+            Assert.NotEmpty(presentation.PresentationPart!.SlideParts);
+            Assert.Contains(presentation.PresentationPart.SlideParts, slidePart => slidePart.ImageParts.Any());
         }
         finally
         {
@@ -76,5 +82,16 @@ public sealed class PptxConversionVerificationTests
         }
 
         throw new DirectoryNotFoundException("Repository root could not be resolved.");
+    }
+
+    private static string ResolveSamplePdfPath(string repositoryRoot)
+    {
+        var candidates = new[]
+        {
+            Path.Combine(repositoryRoot, "DOC", "LASER1205_Architecture_and_Safety.pdf"),
+            @"C:\Users\ksko\OneDrive - 하드램\프로젝트\Wafer Grooving\LASER1205_Architecture_and_Safety.pdf",
+        };
+
+        return candidates.FirstOrDefault(File.Exists) ?? candidates[0];
     }
 }

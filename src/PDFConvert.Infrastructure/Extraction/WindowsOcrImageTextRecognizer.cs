@@ -30,6 +30,15 @@ internal sealed class WindowsOcrImageTextRecognizer
         OcrEngineKind engineKind,
         CancellationToken cancellationToken = default)
     {
+        var layout = await RecognizeLayoutAsync(imageBytes, engineKind, cancellationToken);
+        return string.IsNullOrWhiteSpace(layout?.Text) ? null : layout.Text;
+    }
+
+    public async Task<OcrPageLayout?> RecognizeLayoutAsync(
+        byte[] imageBytes,
+        OcrEngineKind engineKind,
+        CancellationToken cancellationToken = default)
+    {
         var engine = GetEngine(engineKind);
         if (imageBytes.Length == 0 || engine is null)
         {
@@ -47,7 +56,24 @@ internal sealed class WindowsOcrImageTextRecognizer
 
             var result = await engine.RecognizeAsync(bitmap);
             var text = result?.Text?.Trim();
-            return string.IsNullOrWhiteSpace(text) ? null : text;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            var lines = result!.Lines
+                .Select(BuildLine)
+                .Where(line => line is not null)
+                .Cast<OcrTextLine>()
+                .ToArray();
+
+            return new OcrPageLayout
+            {
+                Text = text,
+                PixelWidth = bitmap.PixelWidth,
+                PixelHeight = bitmap.PixelHeight,
+                Lines = lines,
+            };
         }
         catch
         {
@@ -94,5 +120,31 @@ internal sealed class WindowsOcrImageTextRecognizer
         {
             return null;
         }
+    }
+
+    private static OcrTextLine? BuildLine(OcrLine line)
+    {
+        var words = line.Words
+            .Where(word => !string.IsNullOrWhiteSpace(word.Text))
+            .ToArray();
+
+        if (words.Length == 0)
+        {
+            return null;
+        }
+
+        var left = words.Min(word => word.BoundingRect.X);
+        var top = words.Min(word => word.BoundingRect.Y);
+        var right = words.Max(word => word.BoundingRect.X + word.BoundingRect.Width);
+        var bottom = words.Max(word => word.BoundingRect.Y + word.BoundingRect.Height);
+
+        return new OcrTextLine
+        {
+            Text = string.Join(" ", words.Select(word => word.Text.Trim())),
+            Left = left,
+            Top = top,
+            Width = Math.Max(1, right - left),
+            Height = Math.Max(1, bottom - top),
+        };
     }
 }

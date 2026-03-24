@@ -21,7 +21,8 @@ public sealed class MainWindowViewModelTests
             new FakeRecentPathStore());
 
         Assert.Equal("선택된 파일 없음", viewModel.SelectedPdfName);
-        Assert.Contains(viewModel.OutputFormats, item => item.DisplayName == "PPTX" && item.IsSelected);
+        Assert.Contains(viewModel.OutputFormats, item => item.DisplayName == "PPT" && item.IsSelected);
+        Assert.Contains(viewModel.OutputFormats, item => item.DisplayName == "PPTX");
         Assert.Equal("Commit Count: 321 | hash: 123456789", viewModel.GitVersionDisplay);
         Assert.Equal(OcrEngineKind.Auto, viewModel.SelectedOcrEngine?.EngineKind);
         Assert.Contains(viewModel.OcrEngines, item => item.EngineKind == OcrEngineKind.Tesseract);
@@ -104,7 +105,7 @@ public sealed class MainWindowViewModelTests
 
     private sealed class FakeFileDialogService : IFileDialogService
     {
-        public string? PickPdfFile() => null;
+        public string? PickPdfFile(string? initialDirectory = null) => null;
 
         public string? PickOutputFolder(string? initialDirectory = null) => null;
     }

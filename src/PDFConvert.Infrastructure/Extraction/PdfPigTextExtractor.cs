@@ -17,48 +17,66 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
         CancellationToken cancellationToken = default)
     {
         using var document = PdfDocument.Open(pdfPath);
-        var pageRasterizer = useOcr ? await WindowsPdfPageRasterizer.CreateAsync(pdfPath, cancellationToken) : null;
+        var pageRasterizer = await WindowsPdfPageRasterizer.CreateAsync(pdfPath, cancellationToken);
 
         var pages = new List<PdfTextPage>();
         foreach (var page in document.GetPages())
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var structuredText = ExtractStructuredText(page);
-            var extractedText = structuredText;
+            var renderedPage = pageRasterizer is null
+                ? null
+                : await pageRasterizer.RenderPageAsPngAsync(page.Number - 1, cancellationToken);
+
+            var structured = ExtractStructuredText(page);
+            var extractedText = structured.Text;
+            var overlays = structured.Overlays;
+
             if (useOcr)
             {
                 var imageOnlyText = await TryExtractTextFromImagesAsync(page, ocrEngineKind, cancellationToken);
-                extractedText = PdfPageTextMerger.Merge(structuredText, imageOnlyText);
+                extractedText = PdfPageTextMerger.Merge(structured.Text, imageOnlyText);
 
-                if (ShouldTryRenderedPageOcr(structuredText, imageOnlyText))
+                if (ShouldTryRenderedPageOcr(structured.Text, imageOnlyText))
                 {
-                    var renderedPageText = await TryExtractTextUsingOcrAsync(page, pageRasterizer, ocrEngineKind, cancellationToken);
+                    var renderedPageLayout = await TryExtractPageLayoutUsingOcrAsync(renderedPage, ocrEngineKind, cancellationToken);
+                    var renderedPageText = renderedPageLayout?.Text;
+
                     extractedText = PdfPageTextMerger.Merge(
                         ChooseBestText(extractedText, renderedPageText),
                         imageOnlyText);
+
+                    if (renderedPageLayout is not null && renderedPageLayout.Lines.Count > 0)
+                    {
+                        overlays = ToOverlays(renderedPageLayout);
+                    }
                 }
             }
 
             extractedText = OcrTextPostProcessor.Clean(extractedText);
 
-            if (!string.IsNullOrWhiteSpace(extractedText))
+            if (string.IsNullOrWhiteSpace(extractedText) &&
+                renderedPage?.PngBytes is not { Length: > 0 })
             {
-                pages.Add(new PdfTextPage
-                {
-                    PageNumber = page.Number,
-                    Text = extractedText,
-                });
+                continue;
             }
+
+            pages.Add(new PdfTextPage
+            {
+                PageNumber = page.Number,
+                Text = extractedText,
+                RenderedPageImagePng = renderedPage?.PngBytes,
+                RenderedPagePixelWidth = renderedPage?.PixelWidth ?? 0,
+                RenderedPagePixelHeight = renderedPage?.PixelHeight ?? 0,
+                TextOverlays = overlays,
+            });
         }
 
-        var content = new PdfDocumentContent
+        return new PdfDocumentContent
         {
             SourceFilePath = pdfPath,
             Pages = pages.ToArray(),
         };
-
-        return content;
     }
 
     private static bool ShouldTryRenderedPageOcr(string structuredText, string? imageOnlyText)
@@ -76,31 +94,17 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
         return false;
     }
 
-    private async Task<string?> TryExtractTextUsingOcrAsync(
-        Page page,
-        WindowsPdfPageRasterizer? pageRasterizer,
+    private async Task<OcrPageLayout?> TryExtractPageLayoutUsingOcrAsync(
+        RenderedPdfPage? renderedPage,
         OcrEngineKind ocrEngineKind,
         CancellationToken cancellationToken)
     {
-        if (!_ocrRecognizer.IsAvailable(ocrEngineKind))
+        if (renderedPage?.PngBytes is not { Length: > 0 })
         {
             return null;
         }
 
-        if (pageRasterizer is not null)
-        {
-            var renderedPage = await pageRasterizer.RenderPageAsPngAsync(page.Number - 1, cancellationToken);
-            if (renderedPage is { Length: > 0 })
-            {
-                var pageText = await _ocrRecognizer.RecognizeAsync(renderedPage, ocrEngineKind, cancellationToken);
-                if (!string.IsNullOrWhiteSpace(pageText))
-                {
-                    return OcrTextPostProcessor.Clean(pageText);
-                }
-            }
-        }
-
-        return await TryExtractTextFromImagesAsync(page, ocrEngineKind, cancellationToken);
+        return await _ocrRecognizer.RecognizeLayoutAsync(renderedPage.PngBytes, ocrEngineKind, cancellationToken);
     }
 
     private static string ChooseBestText(string extractedText, string? ocrText)
@@ -172,6 +176,27 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
             orderedImageTexts.OrderByDescending(item => item.Top).Select(item => item.Text)));
     }
 
+    private static IReadOnlyList<PdfTextOverlay> ToOverlays(OcrPageLayout layout)
+    {
+        if (layout.PixelWidth <= 0 || layout.PixelHeight <= 0)
+        {
+            return [];
+        }
+
+        return layout.Lines
+            .Where(line => !string.IsNullOrWhiteSpace(line.Text))
+            .Select(line => new PdfTextOverlay
+            {
+                Text = OcrTextPostProcessor.Clean(line.Text),
+                LeftRatio = ClampRatio(line.Left / layout.PixelWidth),
+                TopRatio = ClampRatio(line.Top / layout.PixelHeight),
+                WidthRatio = ClampRatio(line.Width / layout.PixelWidth),
+                HeightRatio = ClampRatio(line.Height / layout.PixelHeight),
+            })
+            .Where(overlay => !string.IsNullOrWhiteSpace(overlay.Text) && overlay.WidthRatio > 0 && overlay.HeightRatio > 0)
+            .ToArray();
+    }
+
     private static byte[]? TryGetImageBytes(IPdfImage image)
     {
         if (image.TryGetPng(out var pngBytes) && pngBytes is { Length: > 0 })
@@ -233,7 +258,7 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
                 (bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 && bytes[3] == 0x2A));
     }
 
-    private static string ExtractStructuredText(Page page)
+    private static StructuredExtractionResult ExtractStructuredText(Page page)
     {
         var words = page.GetWords()
             .Where(word => word.TextOrientation == TextOrientation.Horizontal)
@@ -250,7 +275,11 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
 
         if (words.Count == 0)
         {
-            return Normalize(page.Text);
+            return new StructuredExtractionResult
+            {
+                Text = Normalize(page.Text),
+                Overlays = [],
+            };
         }
 
         var lineTolerance = Math.Max(words.Average(word => word.Height) * 0.5, 2d);
@@ -273,6 +302,7 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
             .ToList();
 
         var result = new List<string>();
+        var overlays = new List<PdfTextOverlay>();
         var averageHeight = Math.Max(words.Average(word => word.Height), 1d);
 
         for (var i = 0; i < orderedLines.Count; i++)
@@ -285,6 +315,7 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
                 if (!string.IsNullOrWhiteSpace(text))
                 {
                     result.Add(text);
+                    overlays.Add(CreateStructuredOverlay(page, segment, text));
                 }
             }
 
@@ -298,7 +329,38 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
             }
         }
 
-        return Normalize(string.Join(Environment.NewLine, result));
+        return new StructuredExtractionResult
+        {
+            Text = Normalize(string.Join(Environment.NewLine, result)),
+            Overlays = overlays,
+        };
+    }
+
+    private static PdfTextOverlay CreateStructuredOverlay(Page page, IReadOnlyList<WordPosition> words, string text)
+    {
+        var left = words.Min(word => word.Left);
+        var right = words.Max(word => word.Right);
+        var top = words.Max(word => word.BaselineY + word.Height);
+        var bottom = words.Min(word => word.BaselineY);
+
+        return new PdfTextOverlay
+        {
+            Text = text,
+            LeftRatio = ClampRatio(left / page.Width),
+            TopRatio = ClampRatio((page.Height - top) / page.Height),
+            WidthRatio = ClampRatio((right - left) / page.Width),
+            HeightRatio = ClampRatio((top - bottom) / page.Height),
+        };
+    }
+
+    private static double ClampRatio(double value)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value))
+        {
+            return 0;
+        }
+
+        return Math.Clamp(value, 0, 1);
     }
 
     private static IReadOnlyList<IReadOnlyList<WordPosition>> SplitIntoSegments(
@@ -410,5 +472,12 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
         public double BaselineY { get; }
 
         public List<WordPosition> Words { get; } = [];
+    }
+
+    private sealed class StructuredExtractionResult
+    {
+        public string Text { get; init; } = string.Empty;
+
+        public IReadOnlyList<PdfTextOverlay> Overlays { get; init; } = [];
     }
 }

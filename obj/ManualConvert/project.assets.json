@@ -1,0 +1,212 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0-windows10.0.19041": {
+      "PDFConvert.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "PDFConvert.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/PDFConvert.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PDFConvert.Application.dll": {}
+        }
+      },
+      "PDFConvert.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/PDFConvert.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PDFConvert.Domain.dll": {}
+        }
+      },
+      "PDFConvert.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "DocumentFormat.OpenXml": "3.2.0",
+          "PDFConvert.Application": "1.0.0",
+          "PDFConvert.Domain": "1.0.0",
+          "UglyToad.PdfPig": "1.7.0-custom-5"
+        },
+        "compile": {
+          "bin/placeholder/PDFConvert.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PDFConvert.Infrastructure.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PDFConvert.Application/1.0.0": {
+      "type": "project",
+      "path": "../../src/PDFConvert.Application/PDFConvert.Application.csproj",
+      "msbuildProject": "../../src/PDFConvert.Application/PDFConvert.Application.csproj"
+    },
+    "PDFConvert.Domain/1.0.0": {
+      "type": "project",
+      "path": "../../src/PDFConvert.Domain/PDFConvert.Domain.csproj",
+      "msbuildProject": "../../src/PDFConvert.Domain/PDFConvert.Domain.csproj"
+    },
+    "PDFConvert.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../../src/PDFConvert.Infrastructure/PDFConvert.Infrastructure.csproj",
+      "msbuildProject": "../../src/PDFConvert.Infrastructure/PDFConvert.Infrastructure.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0-windows10.0.19041": [
+      "PDFConvert.Application >= 1.0.0",
+      "PDFConvert.Domain >= 1.0.0",
+      "PDFConvert.Infrastructure >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "c:\\Project\\PDFConvert\\.dotnet\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Project\\PDFConvert\\tools\\ManualConvert\\ManualConvert.csproj",
+      "projectName": "ManualConvert",
+      "projectPath": "C:\\Project\\PDFConvert\\tools\\ManualConvert\\ManualConvert.csproj",
+      "packagesPath": "c:\\Project\\PDFConvert\\.dotnet\\.nuget\\packages\\",
+      "outputPath": "C:\\Project\\PDFConvert\\obj\\ManualConvert\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\ksko\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0-windows10.0.19041.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0-windows10.0.19041": {
+          "targetAlias": "net9.0-windows10.0.19041.0",
+          "projectReferences": {
+            "C:\\Project\\PDFConvert\\src\\PDFConvert.Application\\PDFConvert.Application.csproj": {
+              "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Application\\PDFConvert.Application.csproj"
+            },
+            "C:\\Project\\PDFConvert\\src\\PDFConvert.Domain\\PDFConvert.Domain.csproj": {
+              "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Domain\\PDFConvert.Domain.csproj"
+            },
+            "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj": {
+              "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.200"
+    },
+    "frameworks": {
+      "net9.0-windows10.0.19041": {
+        "targetAlias": "net9.0-windows10.0.19041.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.Windows.SDK.NET.Ref",
+            "version": "[10.0.19041.57, 10.0.19041.57]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.Windows.SDK.NET.Ref.Windows": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  },
+  "logs": [
+    {
+      "code": "NU1801",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다."
+    },
+    {
+      "code": "NU1801",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다."
+    },
+    {
+      "code": "NU1801",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다."
+    },
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "DocumentFormat.OpenXml 패키지를 찾을 수 없습니다. 원본에 ID가 C:\\Program Files\\dotnet\\library-packs, Microsoft Visual Studio Offline Packages, nuget.org인 패키지가 없습니다.",
+      "libraryId": "DocumentFormat.OpenXml",
+      "targetGraphs": [
+        "net9.0-windows10.0.19041.0"
+      ]
+    },
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "UglyToad.PdfPig 패키지를 찾을 수 없습니다. 원본에 ID가 C:\\Program Files\\dotnet\\library-packs, Microsoft Visual Studio Offline Packages, nuget.org인 패키지가 없습니다.",
+      "libraryId": "UglyToad.PdfPig",
+      "targetGraphs": [
+        "net9.0-windows10.0.19041.0"
+      ]
+    },
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "Microsoft.Windows.SDK.NET.Ref 패키지를 찾을 수 없습니다. 원본에 ID가 C:\\Program Files\\dotnet\\library-packs, Microsoft Visual Studio Offline Packages, nuget.org인 패키지가 없습니다.",
+      "libraryId": "Microsoft.Windows.SDK.NET.Ref",
+      "targetGraphs": [
+        "net9.0-windows10.0.19041"
+      ]
+    },
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "패키지 취약성 데이터를 가져오는 동안 오류가 발생했습니다. https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다."
+    }
+  ]
+}

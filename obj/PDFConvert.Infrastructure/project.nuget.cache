@@ -1,18 +1,78 @@
 {
   "version": 2,
-  "dgSpecHash": "q0fUYmd6Q6M=",
-  "success": true,
+  "dgSpecHash": "09SjoV/a0aM=",
+  "success": false,
   "projectFilePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\ksko\\.nuget\\packages\\documentformat.openxml\\3.2.0\\documentformat.openxml.3.2.0.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\documentformat.openxml.framework\\3.2.0\\documentformat.openxml.framework.3.2.0.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\uglytoad.pdfpig\\1.7.0-custom-5\\uglytoad.pdfpig.1.7.0-custom-5.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\uglytoad.pdfpig.core\\1.7.0-custom-5\\uglytoad.pdfpig.core.1.7.0-custom-5.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\uglytoad.pdfpig.fonts\\1.7.0-custom-5\\uglytoad.pdfpig.fonts.1.7.0-custom-5.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\uglytoad.pdfpig.tokenization\\1.7.0-custom-5\\uglytoad.pdfpig.tokenization.1.7.0-custom-5.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\uglytoad.pdfpig.tokens\\1.7.0-custom-5\\uglytoad.pdfpig.tokens.1.7.0-custom-5.nupkg.sha512",
-    "C:\\Users\\ksko\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.57\\microsoft.windows.sdk.net.ref.10.0.19041.57.nupkg.sha512"
-  ],
-  "logs": []
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1801",
+      "level": "Warning",
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1801",
+      "level": "Warning",
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1801",
+      "level": "Warning",
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "DocumentFormat.OpenXml 패키지를 찾을 수 없습니다. 원본에 ID가 C:\\Program Files\\dotnet\\library-packs, Microsoft Visual Studio Offline Packages, nuget.org인 패키지가 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "libraryId": "DocumentFormat.OpenXml",
+      "targetGraphs": [
+        "net9.0-windows10.0.19041.0"
+      ]
+    },
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "UglyToad.PdfPig 패키지를 찾을 수 없습니다. 원본에 ID가 C:\\Program Files\\dotnet\\library-packs, Microsoft Visual Studio Offline Packages, nuget.org인 패키지가 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "libraryId": "UglyToad.PdfPig",
+      "targetGraphs": [
+        "net9.0-windows10.0.19041.0"
+      ]
+    },
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "Microsoft.Windows.SDK.NET.Ref 패키지를 찾을 수 없습니다. 원본에 ID가 C:\\Program Files\\dotnet\\library-packs, Microsoft Visual Studio Offline Packages, nuget.org인 패키지가 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "libraryId": "Microsoft.Windows.SDK.NET.Ref",
+      "targetGraphs": [
+        "net9.0-windows10.0.19041"
+      ]
+    },
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "패키지 취약성 데이터를 가져오는 동안 오류가 발생했습니다. https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다.",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

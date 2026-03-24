@@ -30,7 +30,7 @@ internal sealed class WindowsPdfPageRasterizer
         }
     }
 
-    public async Task<byte[]?> RenderPageAsPngAsync(int zeroBasedPageIndex, CancellationToken cancellationToken = default)
+    public async Task<RenderedPdfPage?> RenderPageAsPngAsync(int zeroBasedPageIndex, CancellationToken cancellationToken = default)
     {
         if (zeroBasedPageIndex < 0 || zeroBasedPageIndex >= _document.PageCount)
         {
@@ -55,11 +55,26 @@ internal sealed class WindowsPdfPageRasterizer
             using var managedStream = stream.AsStreamForRead();
             using var memoryStream = new MemoryStream();
             await managedStream.CopyToAsync(memoryStream, cancellationToken);
-            return memoryStream.ToArray();
+
+            return new RenderedPdfPage
+            {
+                PngBytes = memoryStream.ToArray(),
+                PixelWidth = (int)options.DestinationWidth,
+                PixelHeight = (int)options.DestinationHeight,
+            };
         }
         catch
         {
             return null;
         }
     }
+}
+
+internal sealed class RenderedPdfPage
+{
+    public byte[] PngBytes { get; init; } = [];
+
+    public int PixelWidth { get; init; }
+
+    public int PixelHeight { get; init; }
 }

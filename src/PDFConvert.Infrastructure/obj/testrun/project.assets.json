@@ -1,0 +1,127 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0-windows10.0.19041": {}
+  },
+  "libraries": {},
+  "projectFileDependencyGroups": {
+    "net9.0-windows10.0.19041": [
+      "DocumentFormat.OpenXml >= 3.2.0",
+      "UglyToad.PdfPig >= 1.7.0-custom-5"
+    ]
+  },
+  "packageFolders": {
+    "c:\\Project\\PDFConvert\\.dotnet\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "projectName": "PDFConvert.Infrastructure",
+      "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\PDFConvert.Infrastructure.csproj",
+      "packagesPath": "c:\\Project\\PDFConvert\\.dotnet\\.nuget\\packages\\",
+      "outputPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Infrastructure\\obj\\testrun\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\ksko\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0-windows10.0.19041.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0-windows10.0.19041": {
+          "targetAlias": "net9.0-windows10.0.19041.0",
+          "projectReferences": {
+            "C:\\Project\\PDFConvert\\src\\PDFConvert.Application\\PDFConvert.Application.csproj": {
+              "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Application\\PDFConvert.Application.csproj"
+            },
+            "C:\\Project\\PDFConvert\\src\\PDFConvert.Domain\\PDFConvert.Domain.csproj": {
+              "projectPath": "C:\\Project\\PDFConvert\\src\\PDFConvert.Domain\\PDFConvert.Domain.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.200"
+    },
+    "frameworks": {
+      "net9.0-windows10.0.19041": {
+        "targetAlias": "net9.0-windows10.0.19041.0",
+        "dependencies": {
+          "DocumentFormat.OpenXml": {
+            "target": "Package",
+            "version": "[3.2.0, )"
+          },
+          "UglyToad.PdfPig": {
+            "target": "Package",
+            "version": "[1.7.0-custom-5, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.Windows.SDK.NET.Ref",
+            "version": "[10.0.19041.57, 10.0.19041.57]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.Windows.SDK.NET.Ref.Windows": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  },
+  "logs": [
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다.\r\n  액세스 권한에 의해 숨겨진 소켓에 액세스를 시도했습니다. (api.nuget.org:443)\r\n  액세스 권한에 의해 숨겨진 소켓에 액세스를 시도했습니다."
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다.\r\n  액세스 권한에 의해 숨겨진 소켓에 액세스를 시도했습니다. (api.nuget.org:443)\r\n  액세스 권한에 의해 숨겨진 소켓에 액세스를 시도했습니다."
+    },
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "패키지 취약성 데이터를 가져오는 동안 오류가 발생했습니다. https://api.nuget.org/v3/index.json 원본에 대한 서비스 인덱스를 로드할 수 없습니다."
+    }
+  ]
+}

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PDFConvert.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+50190fdb2e959e43596a261127a4450c84ab74d0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+744459c2bf416a9a0e69967cf8bd7501a047f9e6")]
 [assembly: System.Reflection.AssemblyProductAttribute("PDFConvert.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PDFConvert.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
