@@ -4,17 +4,3 @@ C:\Project\PDFConvert\src\PDFConvert.Application\bin\Debug\PDFConvert.Applicatio
 C:\Project\PDFConvert\bin\PDFConvert.Application.deps.json
 C:\Project\PDFConvert\bin\PDFConvert.Application.dll
 C:\Project\PDFConvert\bin\PDFConvert.Application.pdb
-C:\Project\PDFConvert\bin\Debug\PDFConvert.Application.deps.json
-C:\Project\PDFConvert\bin\Debug\PDFConvert.Application.dll
-C:\Project\PDFConvert\bin\Debug\PDFConvert.Application.pdb
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.csproj.AssemblyReference.cache
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.GeneratedMSBuildEditorConfig.editorconfig
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.AssemblyInfoInputs.cache
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.AssemblyInfo.cs
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.csproj.CoreCompileInputs.cache
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.sourcelink.json
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConve.E3DC96B2.Up2Date
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.dll
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\refint\PDFConvert.Application.dll
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\PDFConvert.Application.pdb
-C:\Project\PDFConvert\obj\PDFConvert.Application\Debug\ref\PDFConvert.Application.dll

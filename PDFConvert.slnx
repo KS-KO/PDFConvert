@@ -1,10 +1,25 @@
 <Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
   <Folder Name="/src/">
-    <Project Path="src/PDFConvert.App/PDFConvert.App.csproj" />
-    <Project Path="src/PDFConvert.Application/PDFConvert.Application.csproj" />
-    <Project Path="src/PDFConvert.Domain/PDFConvert.Domain.csproj" />
-    <Project Path="src/PDFConvert.Infrastructure/PDFConvert.Infrastructure.csproj" />
-    <Project Path="src/PDFConvert.Presentation/PDFConvert.Presentation.csproj" />
-    <Project Path="Tests/PDFConvert.Tests/PDFConvert.Tests.csproj" />
+    <Project Path="src/PDFConvert.App/PDFConvert.App.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/PDFConvert.Application/PDFConvert.Application.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/PDFConvert.Domain/PDFConvert.Domain.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/PDFConvert.Infrastructure/PDFConvert.Infrastructure.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/PDFConvert.Presentation/PDFConvert.Presentation.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="Tests/PDFConvert.Tests/PDFConvert.Tests.csproj">
+      <Platform Project="x64" />
+    </Project>
   </Folder>
 </Solution>
