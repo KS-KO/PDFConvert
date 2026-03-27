@@ -7,6 +7,8 @@ internal sealed class AppStateDocument
     public string? LastSelectedPdfPath { get; set; }
     public string? LastSelectedOutputDirectory { get; set; }
     public string? GoogleVisionApiKey { get; set; }
+    public string? GoogleClientId { get; set; }
+    public string? GoogleClientSecret { get; set; }
     public string? NaverClovaEndpoint { get; set; }
     public string? NaverClovaSecret { get; set; }
     public List<RecentConversionItem> RecentConversions { get; set; } = [];

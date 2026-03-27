@@ -21,6 +21,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _useOcr;
     private OcrEngineOptionViewModel? _selectedOcrEngine;
     private string? _googleVisionApiKey;
+    private string? _googleClientId;
+    private string? _googleClientSecret;
     private string? _naverClovaEndpoint;
     private string? _naverClovaSecret;
     private int _progressValue;
@@ -96,6 +98,8 @@ public sealed class MainWindowViewModel : ObservableObject
         }
 
         GoogleVisionApiKey = _ocrSettingsStore.GetGoogleVisionApiKey();
+        GoogleClientId = _ocrSettingsStore.GetGoogleClientId();
+        GoogleClientSecret = _ocrSettingsStore.GetGoogleClientSecret();
         NaverClovaEndpoint = _ocrSettingsStore.GetNaverClovaEndpoint();
         NaverClovaSecret = _ocrSettingsStore.GetNaverClovaSecret();
         ApplyOcrEnvironmentSettings();
@@ -135,6 +139,18 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _googleVisionApiKey;
         set => SetProperty(ref _googleVisionApiKey, value);
+    }
+
+    public string? GoogleClientId
+    {
+        get => _googleClientId;
+        set => SetProperty(ref _googleClientId, value);
+    }
+
+    public string? GoogleClientSecret
+    {
+        get => _googleClientSecret;
+        set => SetProperty(ref _googleClientSecret, value);
     }
 
     public string? NaverClovaEndpoint
@@ -398,10 +414,12 @@ public sealed class MainWindowViewModel : ObservableObject
     private void SaveOcrSettings()
     {
         _ocrSettingsStore.SaveGoogleVisionApiKey(GoogleVisionApiKey);
+        _ocrSettingsStore.SaveGoogleClientId(GoogleClientId);
+        _ocrSettingsStore.SaveGoogleClientSecret(GoogleClientSecret);
         _ocrSettingsStore.SaveNaverClovaEndpoint(NaverClovaEndpoint);
         _ocrSettingsStore.SaveNaverClovaSecret(NaverClovaSecret);
         ApplyOcrEnvironmentSettings();
-        StatusMessage = "OCR settings saved.";
+        StatusMessage = "Settings saved.";
     }
 
     private void ApplyOcrEnvironmentSettings()

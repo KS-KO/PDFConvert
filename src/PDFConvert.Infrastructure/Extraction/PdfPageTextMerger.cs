@@ -4,71 +4,42 @@ internal static class PdfPageTextMerger
 {
     public static string Merge(string structuredText, string? imageOnlyText)
     {
-        var normalizedStructuredText = Normalize(structuredText);
-        var normalizedImageOnlyText = Normalize(imageOnlyText ?? string.Empty);
+        var st = (structuredText ?? string.Empty).Trim();
+        var it = (imageOnlyText ?? string.Empty).Trim();
 
-        if (string.IsNullOrWhiteSpace(normalizedStructuredText))
+        if (string.IsNullOrWhiteSpace(st)) return it;
+        if (string.IsNullOrWhiteSpace(it)) return st;
+
+        var mergedLines = SplitToLines(st).ToList();
+        var knownKeys = mergedLines.Select(Canonicalize).Where(k => !string.IsNullOrWhiteSpace(k)).ToHashSet();
+
+        // More granular line-by-line merging
+        foreach (var imgLine in SplitToLines(it))
         {
-            return normalizedImageOnlyText;
-        }
+            var key = Canonicalize(imgLine);
+            if (string.IsNullOrWhiteSpace(key)) continue;
 
-        if (string.IsNullOrWhiteSpace(normalizedImageOnlyText))
-        {
-            return normalizedStructuredText;
-        }
-
-        var mergedBlocks = SplitBlocks(normalizedStructuredText).ToList();
-        var knownKeys = mergedBlocks
-            .Select(Canonicalize)
-            .Where(key => !string.IsNullOrWhiteSpace(key))
-            .ToList();
-
-        foreach (var imageBlock in SplitBlocks(normalizedImageOnlyText))
-        {
-            var imageKey = Canonicalize(imageBlock);
-            if (string.IsNullOrWhiteSpace(imageKey))
+            // Only skip if the line is significantly present already
+            if (knownKeys.Any(k => k.Contains(key, StringComparison.Ordinal) || key.Contains(k, StringComparison.Ordinal)))
             {
                 continue;
             }
 
-            var isDuplicate = knownKeys.Any(knownKey =>
-                knownKey.Contains(imageKey, StringComparison.Ordinal) ||
-                imageKey.Contains(knownKey, StringComparison.Ordinal));
-
-            if (isDuplicate)
-            {
-                continue;
-            }
-
-            mergedBlocks.Add(imageBlock);
-            knownKeys.Add(imageKey);
+            mergedLines.Add(imgLine);
+            knownKeys.Add(key);
         }
 
-        return string.Join(Environment.NewLine + Environment.NewLine, mergedBlocks);
+        return string.Join(Environment.NewLine, mergedLines);
     }
 
-    private static IReadOnlyList<string> SplitBlocks(string text)
+    private static IEnumerable<string> SplitToLines(string text)
     {
-        return text
-            .Split([Environment.NewLine + Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)
-            .Select(block => block.Trim())
-            .Where(block => !string.IsNullOrWhiteSpace(block))
-            .ToArray();
+        return text.Replace("\r\n", "\n").Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(l => l.Trim()).Where(l => !string.IsNullOrWhiteSpace(l));
     }
 
     private static string Canonicalize(string text)
     {
-        return new string(text
-            .ToLowerInvariant()
-            .Where(char.IsLetterOrDigit)
-            .ToArray());
-    }
-
-    private static string Normalize(string text)
-    {
-        return text.Replace("\r\n", "\n")
-            .Replace('\r', '\n')
-            .Replace("\n", Environment.NewLine)
-            .Trim();
+        return new string(text.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
     }
 }

@@ -94,6 +94,14 @@
                                 <TextBox Width="240"
                                          Text="{Binding GoogleVisionApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <TextBlock Margin="0,12,0,4"
+                                           Text="Google Client ID" />
+                                <TextBox Width="240"
+                                         Text="{Binding GoogleClientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,12,0,4"
+                                           Text="Google Client Secret" />
+                                <TextBox Width="240"
+                                         Text="{Binding GoogleClientSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,12,0,4"
                                            Text="Naver Clova Endpoint" />
                                 <TextBox Width="240"
                                          Text="{Binding NaverClovaEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

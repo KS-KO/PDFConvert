@@ -5,7 +5,6 @@ using Windows.Globalization;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
-using Windows.System.UserProfile;
 
 namespace PDFConvert.Infrastructure.Extraction;
 
@@ -25,43 +24,32 @@ internal sealed class WindowsOcrImageTextRecognizer
 
     public bool IsAvailable(OcrEngineKind engineKind) => GetEngine(engineKind) is not null;
 
-    public async Task<string?> RecognizeAsync(
-        byte[] imageBytes,
-        OcrEngineKind engineKind,
-        CancellationToken cancellationToken = default)
+    public async Task<string?> RecognizeAsync(byte[] imageBytes, OcrEngineKind engineKind, CancellationToken cancellationToken = default)
     {
         var layout = await RecognizeLayoutAsync(imageBytes, engineKind, cancellationToken);
         return string.IsNullOrWhiteSpace(layout?.Text) ? null : layout.Text;
     }
 
-    public async Task<OcrPageLayout?> RecognizeLayoutAsync(
-        byte[] imageBytes,
-        OcrEngineKind engineKind,
-        CancellationToken cancellationToken = default)
+    public async Task<OcrPageLayout?> RecognizeLayoutAsync(byte[] imageBytes, OcrEngineKind engineKind, CancellationToken cancellationToken = default)
     {
         var engine = GetEngine(engineKind);
-        if (imageBytes.Length == 0 || engine is null)
-        {
-            return null;
-        }
+        if (imageBytes == null || imageBytes.Length == 0 || engine is null) return null;
 
         try
         {
-            await using var stream = new MemoryStream(imageBytes, writable: false);
-            using var randomAccessStream = stream.AsRandomAccessStream();
-            var decoder = await BitmapDecoder.CreateAsync(randomAccessStream);
-            var bitmap = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+            using var stream = new InMemoryRandomAccessStream();
+            await stream.WriteAsync(imageBytes.AsBuffer());
+            stream.Seek(0);
+
+            var decoder = await BitmapDecoder.CreateAsync(stream);
+            using var bitmap = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
 
             cancellationToken.ThrowIfCancellationRequested();
 
             var result = await engine.RecognizeAsync(bitmap);
-            var text = result?.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                return null;
-            }
+            if (result == null || string.IsNullOrWhiteSpace(result.Text)) return null;
 
-            var lines = result!.Lines
+            var lines = result.Lines
                 .Select(BuildLine)
                 .Where(line => line is not null)
                 .Cast<OcrTextLine>()
@@ -69,82 +57,59 @@ internal sealed class WindowsOcrImageTextRecognizer
 
             return new OcrPageLayout
             {
-                Text = text,
+                Text = result.Text,
                 PixelWidth = bitmap.PixelWidth,
                 PixelHeight = bitmap.PixelHeight,
                 Lines = lines,
             };
         }
-        catch
-        {
-            return null;
-        }
+        catch { return null; }
     }
 
     private OcrEngine? GetEngine(OcrEngineKind engineKind)
     {
-        return _ocrEngines.TryGetValue(engineKind, out var engine)
-            ? engine.Value
-            : _ocrEngines[OcrEngineKind.Auto].Value;
+        if (_ocrEngines.TryGetValue(engineKind, out var engine) && engine.Value != null) return engine.Value;
+        return _ocrEngines[OcrEngineKind.Auto].Value;
     }
 
     private static OcrEngine? CreateOcrEngine(OcrEngineKind engineKind)
     {
         try
         {
-            var prioritizedTags = engineKind switch
+            var langTags = engineKind switch
             {
-                OcrEngineKind.WindowsKoreanPreferred => new List<string> { "ko-KR", "ko", "en-US", "en" },
-                OcrEngineKind.WindowsEnglishPreferred => new List<string> { "en-US", "en", "ko-KR", "ko" },
-                _ => new List<string> { "ko-KR", "en-US", "ko", "en" },
+                OcrEngineKind.WindowsKoreanPreferred => new[] { "ko-KR", "en-US" },
+                OcrEngineKind.WindowsEnglishPreferred => new[] { "en-US", "ko-KR" },
+                _ => new[] { "ko-KR", "en-US" }
             };
 
-            prioritizedTags.AddRange(GlobalizationPreferences.Languages);
-
-            var preferredLanguages = prioritizedTags
-                .Where(tag => !string.IsNullOrWhiteSpace(tag))
-                .Distinct(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var tag in preferredLanguages)
+            foreach (var tag in langTags)
             {
-                var language = new Language(tag);
-                if (OcrEngine.IsLanguageSupported(language))
-                {
-                    return OcrEngine.TryCreateFromLanguage(language);
-                }
+                var lang = new Language(tag);
+                if (OcrEngine.IsLanguageSupported(lang)) return OcrEngine.TryCreateFromLanguage(lang);
             }
 
-            return OcrEngine.TryCreateFromUserProfileLanguages() ?? OcrEngine.TryCreateFromLanguage(new Language("en"));
+            // Final fallbacks
+            return OcrEngine.TryCreateFromUserProfileLanguages() 
+                   ?? OcrEngine.AvailableRecognizerLanguages.Select(OcrEngine.TryCreateFromLanguage).FirstOrDefault(e => e != null);
         }
-        catch
-        {
-            return null;
-        }
+        catch { return null; }
     }
 
     private static OcrTextLine? BuildLine(OcrLine line)
     {
-        var words = line.Words
-            .Where(word => !string.IsNullOrWhiteSpace(word.Text))
-            .ToArray();
+        var words = line.Words.Where(w => !string.IsNullOrWhiteSpace(w.Text)).ToArray();
+        if (words.Length == 0) return null;
 
-        if (words.Length == 0)
-        {
-            return null;
-        }
-
-        var left = words.Min(word => word.BoundingRect.X);
-        var top = words.Min(word => word.BoundingRect.Y);
-        var right = words.Max(word => word.BoundingRect.X + word.BoundingRect.Width);
-        var bottom = words.Max(word => word.BoundingRect.Y + word.BoundingRect.Height);
+        var left = words.Min(w => w.BoundingRect.X);
+        var top = words.Min(w => w.BoundingRect.Y);
+        var right = words.Max(w => w.BoundingRect.X + w.BoundingRect.Width);
+        var bottom = words.Max(w => w.BoundingRect.Y + w.BoundingRect.Height);
 
         return new OcrTextLine
         {
-            Text = string.Join(" ", words.Select(word => word.Text.Trim())),
-            Left = left,
-            Top = top,
-            Width = Math.Max(1, right - left),
-            Height = Math.Max(1, bottom - top),
+            Text = string.Join(" ", words.Select(w => w.Text.Trim())),
+            Left = left, Top = top, Width = Math.Max(1, right - left), Height = Math.Max(1, bottom - top)
         };
     }
 }

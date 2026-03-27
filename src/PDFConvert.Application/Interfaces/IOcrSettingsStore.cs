@@ -5,6 +5,12 @@ public interface IOcrSettingsStore
     string? GetGoogleVisionApiKey();
     void SaveGoogleVisionApiKey(string? apiKey);
 
+    string? GetGoogleClientId();
+    void SaveGoogleClientId(string? clientId);
+
+    string? GetGoogleClientSecret();
+    void SaveGoogleClientSecret(string? clientSecret);
+
     string? GetNaverClovaEndpoint();
     void SaveNaverClovaEndpoint(string? endpoint);
 

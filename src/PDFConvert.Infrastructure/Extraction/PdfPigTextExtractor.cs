@@ -55,6 +55,7 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
                 }
             }
 
+            var extractedImages = ExtractImages(page);
             extractedText = OcrTextPostProcessor.Clean(extractedText);
 
             if (string.IsNullOrWhiteSpace(extractedText) &&
@@ -67,10 +68,13 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
             {
                 PageNumber = page.Number,
                 Text = extractedText,
+                PointsWidth = page.Width,
+                PointsHeight = page.Height,
                 RenderedPageImagePng = renderedPage?.PngBytes,
                 RenderedPagePixelWidth = renderedPage?.PixelWidth ?? 0,
                 RenderedPagePixelHeight = renderedPage?.PixelHeight ?? 0,
                 TextOverlays = overlays,
+                ImageOverlays = extractedImages,
             });
         }
 
@@ -196,6 +200,27 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
 
         return Normalize(string.Join(Environment.NewLine + Environment.NewLine,
             orderedImageTexts.OrderByDescending(item => item.Top).Select(item => item.Text)));
+    }
+
+    private static IReadOnlyList<PdfImageOverlay> ExtractImages(Page page)
+    {
+        var result = new List<PdfImageOverlay>();
+        foreach (var image in page.GetImages())
+        {
+            var bytes = TryGetImageBytes(image);
+            if (bytes is { Length: > 0 })
+            {
+                result.Add(new PdfImageOverlay
+                {
+                    ImageBytes = bytes,
+                    LeftRatio = ClampRatio(image.Bounds.Left / page.Width),
+                    TopRatio = ClampRatio((page.Height - image.Bounds.Top) / page.Height),
+                    WidthRatio = ClampRatio(image.Bounds.Width / page.Width),
+                    HeightRatio = ClampRatio(image.Bounds.Height / page.Height),
+                });
+            }
+        }
+        return result;
     }
 
     private static IReadOnlyList<PdfTextOverlay> ToOverlays(OcrPageLayout layout)

@@ -1,73 +1,62 @@
-using System.Diagnostics;
+using Tesseract;
 
 namespace PDFConvert.Infrastructure.Extraction;
 
 internal sealed class TesseractOcrImageTextRecognizer
 {
-    private readonly Lazy<string?> _executablePath = new(() => TesseractRuntimeLocator.ResolveExecutablePath());
+    private readonly Lazy<string?> _tessdataPath = new(() => TesseractRuntimeLocator.ResolveTessdataDirectory());
 
-    public bool IsAvailable() => !string.IsNullOrWhiteSpace(_executablePath.Value);
+    public bool IsAvailable() => !string.IsNullOrWhiteSpace(_tessdataPath.Value);
 
     public async Task<string?> RecognizeAsync(byte[] imageBytes, CancellationToken cancellationToken = default)
     {
-        var executablePath = _executablePath.Value;
-        if (string.IsNullOrWhiteSpace(executablePath) || imageBytes.Length == 0)
+        var tessdataPath = _tessdataPath.Value;
+        if (string.IsNullOrWhiteSpace(tessdataPath) || imageBytes.Length == 0)
         {
             return null;
         }
-
-        var tempFilePath = Path.Combine(Path.GetTempPath(), $"pdfconvert_{Guid.NewGuid():N}.png");
 
         try
         {
-            await File.WriteAllBytesAsync(tempFilePath, imageBytes, cancellationToken);
-
-            var startInfo = new ProcessStartInfo
+            // Tesseract library is CPU bound and synchronous, so we run it in Task.Run
+            return await Task.Run(() =>
             {
-                FileName = executablePath,
-                Arguments = $"\"{tempFilePath}\" stdout -l kor+eng --psm 6",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                WorkingDirectory = Path.GetDirectoryName(executablePath) ?? AppContext.BaseDirectory,
-            };
-
-            var tessdataDirectory = TesseractRuntimeLocator.ResolveTessdataDirectory(executablePath);
-            if (!string.IsNullOrWhiteSpace(tessdataDirectory))
-            {
-                startInfo.Environment["TESSDATA_PREFIX"] = tessdataDirectory;
-            }
-
-            using var process = Process.Start(startInfo);
-            if (process is null)
-            {
-                return null;
-            }
-
-            var output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-            await process.WaitForExitAsync(cancellationToken);
-
-            return process.ExitCode == 0 && !string.IsNullOrWhiteSpace(output)
-                ? output.Trim()
-                : null;
+                try
+                {
+                    // Ensure our kor+eng data exists in the path
+                    // Use Default engine mode
+                    using var engine = new TesseractEngine(tessdataPath, "kor+eng", EngineMode.Default);
+                    
+                    // Pix.LoadFromMemory is fast
+                    using var img = Pix.LoadFromMemory(imageBytes);
+                    
+                    using var page = engine.Process(img, PageSegMode.Auto);
+                    
+                    var text = page.GetText();
+                    return string.IsNullOrWhiteSpace(text) ? null : text.Trim();
+                }
+                catch (Exception)
+                {
+                    // If kor+eng fails, try just eng or kor
+                    try
+                    {
+                        using var engine = new TesseractEngine(tessdataPath, "eng", EngineMode.Default);
+                        using var img = Pix.LoadFromMemory(imageBytes);
+                        using var page = engine.Process(img);
+                        var text = page.GetText();
+                        return string.IsNullOrWhiteSpace(text) ? null : text.Trim();
+                    }
+                    catch { return null; }
+                }
+            }, cancellationToken);
         }
-        catch
+        catch (OperationCanceledException)
         {
             return null;
         }
-        finally
+        catch (Exception)
         {
-            try
-            {
-                if (File.Exists(tempFilePath))
-                {
-                    File.Delete(tempFilePath);
-                }
-            }
-            catch
-            {
-            }
+            return null;
         }
     }
 }

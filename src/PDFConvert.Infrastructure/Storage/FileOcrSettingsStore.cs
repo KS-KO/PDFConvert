@@ -21,6 +21,24 @@ public sealed class FileOcrSettingsStore : IOcrSettingsStore
         _appStateStore.Save(document);
     }
 
+    public string? GetGoogleClientId() => _appStateStore.Load().GoogleClientId;
+
+    public void SaveGoogleClientId(string? clientId)
+    {
+        var document = _appStateStore.Load();
+        document.GoogleClientId = Normalize(clientId);
+        _appStateStore.Save(document);
+    }
+
+    public string? GetGoogleClientSecret() => _appStateStore.Load().GoogleClientSecret;
+
+    public void SaveGoogleClientSecret(string? clientSecret)
+    {
+        var document = _appStateStore.Load();
+        document.GoogleClientSecret = Normalize(clientSecret);
+        _appStateStore.Save(document);
+    }
+
     public string? GetNaverClovaEndpoint() => _appStateStore.Load().NaverClovaEndpoint;
 
     public void SaveNaverClovaEndpoint(string? endpoint)

@@ -62,19 +62,18 @@ public sealed class PptxOutputWriter : IOutputWriter
 
     private static (long Width, long Height) ResolveSlideSize(PdfDocumentContent document)
     {
-        var firstVisualPage = document.Pages.FirstOrDefault(page =>
-            page.RenderedPageImagePng is { Length: > 0 } &&
-            page.RenderedPagePixelWidth > 0 &&
-            page.RenderedPagePixelHeight > 0);
+        var firstPage = document.Pages.FirstOrDefault();
 
-        if (firstVisualPage is null)
+        if (firstPage is null || firstPage.PointsWidth <= 0 || firstPage.PointsHeight <= 0)
         {
             return (DefaultSlideWidth, DefaultSlideHeight);
         }
 
-        var aspectRatio = firstVisualPage.RenderedPagePixelHeight / (double)firstVisualPage.RenderedPagePixelWidth;
-        var calculatedHeight = (long)Math.Round(DefaultSlideWidth * aspectRatio);
-        return (DefaultSlideWidth, Math.Max(1, calculatedHeight));
+        // 1 point = 12,700 EMU
+        var widthEmu = (long)Math.Round(firstPage.PointsWidth * 12700L);
+        var heightEmu = (long)Math.Round(firstPage.PointsHeight * 12700L);
+
+        return (widthEmu, heightEmu);
     }
 
     private static void GenerateSlidePart(

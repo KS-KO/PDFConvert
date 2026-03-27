@@ -68,22 +68,15 @@ public sealed class MainWindowViewModelTests
     private sealed class FakeOcrSettingsStore : IOcrSettingsStore
     {
         public string? GetGoogleVisionApiKey() => null;
-
-        public void SaveGoogleVisionApiKey(string? apiKey)
-        {
-        }
-
+        public void SaveGoogleVisionApiKey(string? apiKey) { }
+        public string? GetGoogleClientId() => null;
+        public void SaveGoogleClientId(string? clientId) { }
+        public string? GetGoogleClientSecret() => null;
+        public void SaveGoogleClientSecret(string? clientSecret) { }
         public string? GetNaverClovaEndpoint() => null;
-
-        public void SaveNaverClovaEndpoint(string? endpoint)
-        {
-        }
-
+        public void SaveNaverClovaEndpoint(string? endpoint) { }
         public string? GetNaverClovaSecret() => null;
-
-        public void SaveNaverClovaSecret(string? secret)
-        {
-        }
+        public void SaveNaverClovaSecret(string? secret) { }
     }
 
     private sealed class FakeConversionCoordinator : IConversionCoordinator

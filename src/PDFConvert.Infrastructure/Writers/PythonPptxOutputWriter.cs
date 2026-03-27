@@ -30,10 +30,13 @@ public sealed class PythonPptxOutputWriter : IOutputWriter
         string fileName;
         string arguments;
 
+        var outputDirTrimmed = outputDirectory.TrimEnd('\\', '/');
+        var sourceFileTrimmed = sourceFilePath.TrimEnd('\\', '/');
+
         if (isExe)
         {
             fileName = scriptPath;
-            arguments = $"--pdf \"{sourceFilePath}\" --outdir \"{outputDirectory}\"";
+            arguments = $"--pdf \"{sourceFileTrimmed}\" --outdir \"{outputDirTrimmed}\"";
         }
         else
         {
@@ -43,7 +46,7 @@ public sealed class PythonPptxOutputWriter : IOutputWriter
                 throw new Exception("Python was not found. Please install Python or use the bundled version.");
             }
             fileName = pythonExecutable;
-            arguments = $"\"{scriptPath}\" --pdf \"{sourceFilePath}\" --outdir \"{outputDirectory}\"";
+            arguments = $"\"{scriptPath}\" --pdf \"{sourceFileTrimmed}\" --outdir \"{outputDirTrimmed}\"";
         }
 
         var startInfo = new ProcessStartInfo
@@ -62,10 +65,13 @@ public sealed class PythonPptxOutputWriter : IOutputWriter
             throw new Exception("Failed to start the Python process.");
         }
 
+        var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
+
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
-        var output = await process.StandardOutput.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-        var error = await process.StandardError.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+        var output = await outputTask.ConfigureAwait(false);
+        var error = await errorTask.ConfigureAwait(false);
 
         if (process.ExitCode != 0)
         {
@@ -74,7 +80,9 @@ public sealed class PythonPptxOutputWriter : IOutputWriter
 
         if (!File.Exists(expectedOutputPath))
         {
-            throw new FileNotFoundException($"Python script completed but the expected output file was not found: {expectedOutputPath}");
+            var logPath = Path.Combine(outputDirectory, "python_conversion_error.log");
+            File.WriteAllText(logPath, $"Standard Output:\n{output}\n\nStandard Error:\n{error}");
+            throw new FileNotFoundException($"Python script completed but the expected output file was not found: {expectedOutputPath}\nDetailed log written to: {logPath}");
         }
 
         return expectedOutputPath;
