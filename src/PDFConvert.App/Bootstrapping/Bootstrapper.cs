@@ -37,6 +37,7 @@ public sealed class Bootstrapper
             new PptxOutputWriter(),
             new DocOutputWriter(),
             new GoogleSlidesPlaceholderWriter(),
+            new PythonPptxOutputWriter(),
         ];
         IConversionCoordinator conversionCoordinator = new ConversionCoordinator(pdfTextExtractor, outputPathResolver, writers);
         var viewModel = new MainWindowViewModel(

@@ -53,6 +53,18 @@ internal sealed class PageImageSampler : IDisposable
         return $"{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
     }
 
+    public string SampleFontHex(PdfTextOverlay overlay, string? backgroundHex = null)
+    {
+        var bgColor = backgroundHex != null
+            ? new RgbColor(Convert.ToByte(backgroundHex.Substring(0, 2), 16),
+                           Convert.ToByte(backgroundHex.Substring(2, 2), 16),
+                           Convert.ToByte(backgroundHex.Substring(4, 2), 16))
+            : SampleBackgroundColor(overlay);
+
+        var fontColor = SampleFontColor(overlay, bgColor);
+        return $"{fontColor.Red:X2}{fontColor.Green:X2}{fontColor.Blue:X2}";
+    }
+
     public void EraseTextArea(PdfTextOverlay overlay)
     {
         if (Width <= 0 || Height <= 0)
@@ -251,6 +263,60 @@ internal sealed class PageImageSampler : IDisposable
         }
 
         return new RgbColor((byte)(red / count), (byte)(green / count), (byte)(blue / count));
+    }
+
+    private RgbColor SampleFontColor(PdfTextOverlay overlay, RgbColor bgColor)
+    {
+        if (Width <= 0 || Height <= 0)
+        {
+            return new RgbColor(0, 0, 0);
+        }
+
+        var left = ClampPixel((int)Math.Floor(overlay.LeftRatio * Width), Width);
+        var top = ClampPixel((int)Math.Floor(overlay.TopRatio * Height), Height);
+        var right = ClampPixel((int)Math.Ceiling((overlay.LeftRatio + overlay.WidthRatio) * Width), Width);
+        var bottom = ClampPixel((int)Math.Ceiling((overlay.TopRatio + overlay.HeightRatio) * Height), Height);
+
+        if (right <= left || bottom <= top)
+        {
+            return new RgbColor(0, 0, 0);
+        }
+
+        var candidatePixels = new List<RgbColor>();
+        for (var y = top; y < bottom; y++)
+        {
+            for (var x = left; x < right; x++)
+            {
+                var index = ((y * Width) + x) * 4;
+                if (index + 3 >= _pixels.Length) continue;
+
+                var r = _pixels[index + 2];
+                var g = _pixels[index + 1];
+                var b = _pixels[index];
+                
+                var dist = Math.Sqrt(Math.Pow(r - bgColor.Red, 2) + Math.Pow(g - bgColor.Green, 2) + Math.Pow(b - bgColor.Blue, 2));
+                if (dist > 35) // Different enough from background
+                {
+                    candidatePixels.Add(new RgbColor(r, g, b));
+                }
+            }
+        }
+
+        if (candidatePixels.Count == 0)
+        {
+            return new RgbColor(0, 0, 0);
+        }
+
+        // Return the average of candidates
+        long rSum = 0, gSum = 0, bSum = 0;
+        foreach (var p in candidatePixels)
+        {
+            rSum += p.Red;
+            gSum += p.Green;
+            bSum += p.Blue;
+        }
+
+        return new RgbColor((byte)(rSum / candidatePixels.Count), (byte)(gSum / candidatePixels.Count), (byte)(bSum / candidatePixels.Count));
     }
 
     private readonly record struct RgbColor(byte Red, byte Green, byte Blue);

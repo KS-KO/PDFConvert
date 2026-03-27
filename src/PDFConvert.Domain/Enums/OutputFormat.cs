@@ -6,4 +6,5 @@ public enum OutputFormat
     Docx,
     Doc,
     GoogleSlides,
+    PythonPptx,
 }

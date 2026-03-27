@@ -102,6 +102,7 @@ public sealed class PptxOutputWriter : IOutputWriter
             {
                 foreach (var overlay in page.TextOverlays.Where(overlay => !string.IsNullOrWhiteSpace(overlay.Text)))
                 {
+                    overlay.FontColorHex = imageSampler.SampleFontHex(overlay);
                     imageSampler.EraseTextArea(overlay);
                 }
 
@@ -159,10 +160,16 @@ public sealed class PptxOutputWriter : IOutputWriter
         var height = Math.Max(1L, ToEmu(overlay.HeightRatio, slideHeight));
         var fontSize = ResolveFontSize(overlay.Text, width, height);
 
+        var runProperties = new A.RunProperties { Language = "ko-KR", FontSize = fontSize, Dirty = false };
+        if (!string.IsNullOrWhiteSpace(overlay.FontColorHex))
+        {
+            runProperties.Append(new A.SolidFill(new A.RgbColorModelHex { Val = overlay.FontColorHex }));
+        }
+
         var paragraph = new A.Paragraph(
             new A.ParagraphProperties { Alignment = A.TextAlignmentTypeValues.Left },
             new A.Run(
-                new A.RunProperties { Language = "ko-KR", FontSize = fontSize, Dirty = false },
+                runProperties,
                 new A.Text(overlay.Text)),
             new A.EndParagraphRunProperties { Language = "ko-KR", FontSize = fontSize });
 

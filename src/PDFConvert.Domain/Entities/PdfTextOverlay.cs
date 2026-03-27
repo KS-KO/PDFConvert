@@ -11,4 +11,6 @@ public sealed class PdfTextOverlay
     public double WidthRatio { get; init; }
 
     public double HeightRatio { get; init; }
+
+    public string? FontColorHex { get; set; }
 }

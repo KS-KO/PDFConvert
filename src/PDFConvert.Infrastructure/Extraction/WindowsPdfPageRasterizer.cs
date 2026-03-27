@@ -44,8 +44,8 @@ internal sealed class WindowsPdfPageRasterizer
 
             var options = new PdfPageRenderOptions
             {
-                DestinationWidth = (uint)Math.Max(1200, Math.Ceiling(page.Size.Width * 2)),
-                DestinationHeight = (uint)Math.Max(1600, Math.Ceiling(page.Size.Height * 2)),
+                DestinationWidth = (uint)Math.Max(2000, Math.Ceiling(page.Size.Width * 4)),
+                DestinationHeight = (uint)Math.Max(2800, Math.Ceiling(page.Size.Height * 4)),
             };
 
             await page.RenderToStreamAsync(stream, options);

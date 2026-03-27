@@ -30,26 +30,28 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
 
             var structured = ExtractStructuredText(page);
             var extractedText = structured.Text;
-            var overlays = structured.Overlays;
+            var overlays = structured.Overlays.ToList();
 
             if (useOcr)
             {
+                // 1. Extract from individual images (if any)
                 var imageOnlyText = await TryExtractTextFromImagesAsync(page, ocrEngineKind, cancellationToken);
                 extractedText = PdfPageTextMerger.Merge(structured.Text, imageOnlyText);
 
-                if (ShouldTryRenderedPageOcr(structured.Text, imageOnlyText))
+                // 2. Perform Full Page OCR to fill gaps (Hybrid)
+                var renderedPageLayout = await TryExtractPageLayoutUsingOcrAsync(renderedPage, ocrEngineKind, cancellationToken);
+                if (renderedPageLayout != null)
                 {
-                    var renderedPageLayout = await TryExtractPageLayoutUsingOcrAsync(renderedPage, ocrEngineKind, cancellationToken);
-                    var renderedPageText = renderedPageLayout?.Text;
-
-                    extractedText = PdfPageTextMerger.Merge(
-                        ChooseBestText(extractedText, renderedPageText),
-                        imageOnlyText);
-
-                    if (renderedPageLayout is not null && renderedPageLayout.Lines.Count > 0)
+                    var ocrOverlays = ToOverlays(renderedPageLayout);
+                    // Filter out OCR results that overlap significantly with native text
+                    foreach (var ocrOverlay in ocrOverlays)
                     {
-                        overlays = ToOverlays(renderedPageLayout);
+                        if (!IsOverlappingWithAny(ocrOverlay, overlays))
+                        {
+                            overlays.Add(ocrOverlay);
+                        }
                     }
+                    extractedText = PdfPageTextMerger.Merge(extractedText, renderedPageLayout.Text);
                 }
             }
 
@@ -105,6 +107,26 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
         }
 
         return await _ocrRecognizer.RecognizeLayoutAsync(renderedPage.PngBytes, ocrEngineKind, cancellationToken);
+    }
+
+    private static bool IsOverlappingWithAny(PdfTextOverlay candidate, List<PdfTextOverlay> existing)
+    {
+        return existing.Any(e => 
+        {
+            var intersectionLeft = Math.Max(candidate.LeftRatio, e.LeftRatio);
+            var intersectionTop = Math.Max(candidate.TopRatio, e.TopRatio);
+            var intersectionRight = Math.Min(candidate.LeftRatio + candidate.WidthRatio, e.LeftRatio + e.WidthRatio);
+            var intersectionBottom = Math.Min(candidate.TopRatio + candidate.HeightRatio, e.TopRatio + e.HeightRatio);
+
+            if (intersectionRight > intersectionLeft && intersectionBottom > intersectionTop)
+            {
+                var intersectionArea = (intersectionRight - intersectionLeft) * (intersectionBottom - intersectionTop);
+                var candidateArea = candidate.WidthRatio * candidate.HeightRatio;
+                // If more than 50% of the candidate is covered by existing text, it's an overlap
+                return intersectionArea / candidateArea > 0.5;
+            }
+            return false;
+        });
     }
 
     private static string ChooseBestText(string extractedText, string? ocrText)

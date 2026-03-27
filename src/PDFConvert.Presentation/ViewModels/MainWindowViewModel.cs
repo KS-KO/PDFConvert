@@ -67,6 +67,7 @@ public sealed class MainWindowViewModel : ObservableObject
             new(OutputFormat.Docx, "DOCX"),
             new(OutputFormat.Doc, "DOC"),
             new(OutputFormat.GoogleSlides, "Google Slides"),
+            new(OutputFormat.PythonPptx, "Python (Editable PPTX)"),
         };
 
         foreach (var format in OutputFormats)
