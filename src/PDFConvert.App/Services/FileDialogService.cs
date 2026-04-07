@@ -7,12 +7,12 @@ namespace PDFConvert.App.Services;
 
 public sealed class FileDialogService : IFileDialogService
 {
-    public string? PickPdfFile(string? initialDirectory = null)
+    public string? PickSourceFile(string? initialDirectory = null)
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "PDF 파일 선택",
-            Filter = "PDF Files (*.pdf)|*.pdf",
+            Title = "변환할 파일 선택",
+            Filter = "PDF 및 이미지 파일 (*.pdf;*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tiff)|*.pdf;*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tiff|PDF Files (*.pdf)|*.pdf|Image Files (*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tiff)|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tiff|All Files (*.*)|*.*",
             DefaultExt = ".pdf",
             AddExtension = true,
             CheckFileExists = true,

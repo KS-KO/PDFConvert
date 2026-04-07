@@ -16,6 +16,11 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
         OcrEngineKind ocrEngineKind = OcrEngineKind.Auto,
         CancellationToken cancellationToken = default)
     {
+        if (IsImageFile(pdfPath))
+        {
+            return await ExtractFromImageFileAsync(pdfPath, ocrEngineKind, cancellationToken);
+        }
+
         using var document = PdfDocument.Open(pdfPath);
         var pageRasterizer = await WindowsPdfPageRasterizer.CreateAsync(pdfPath, cancellationToken);
 
@@ -519,6 +524,45 @@ public sealed class PdfPigTextExtractor : IPdfTextExtractor
         public double BaselineY { get; }
 
         public List<WordPosition> Words { get; } = [];
+    }
+
+    private async Task<PdfDocumentContent> ExtractFromImageFileAsync(string imagePath, OcrEngineKind ocrEngineKind, CancellationToken cancellationToken)
+    {
+        var imageBytes = await File.ReadAllBytesAsync(imagePath, cancellationToken);
+        var layout = await _ocrRecognizer.RecognizeLayoutAsync(imageBytes, ocrEngineKind, cancellationToken);
+
+        if (layout is null)
+        {
+            throw new InvalidOperationException("이미지 파일에서 텍스트를 인식(OCR)하는 데 실패했습니다.");
+        }
+
+        var overlays = ToOverlays(layout);
+        var text = OcrTextPostProcessor.Clean(layout.Text);
+
+        var page = new PdfTextPage
+        {
+            PageNumber = 1,
+            Text = text,
+            PointsWidth = layout.PixelWidth, // Images use pixels as basic units for now
+            PointsHeight = layout.PixelHeight,
+            RenderedPageImagePng = imageBytes, // In case of direct image, we use it as is if it's already png-like
+            RenderedPagePixelWidth = layout.PixelWidth,
+            RenderedPagePixelHeight = layout.PixelHeight,
+            TextOverlays = overlays,
+        };
+
+        return new PdfDocumentContent
+        {
+            SourceFilePath = imagePath,
+            Pages = [page],
+        };
+    }
+
+    private static bool IsImageFile(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return false;
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext is ".jpg" or ".jpeg" or ".png" or ".bmp" or ".gif" or ".tiff";
     }
 
     private sealed class StructuredExtractionResult

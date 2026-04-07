@@ -12,14 +12,14 @@ public sealed class FileRecentPathStore : IRecentPathStore
         _stateStore = stateStore;
     }
 
-    public string? GetLastSelectedPdfPath() => _stateStore.Load().LastSelectedPdfPath;
+    public string? GetLastSelectedSourcePath() => _stateStore.Load().LastSelectedPdfPath;
 
     public string? GetLastSelectedOutputDirectory() => _stateStore.Load().LastSelectedOutputDirectory;
 
-    public void SaveLastSelectedPdfPath(string pdfPath)
+    public void SaveLastSelectedSourcePath(string sourcePath)
     {
         var state = _stateStore.Load();
-        state.LastSelectedPdfPath = pdfPath;
+        state.LastSelectedPdfPath = sourcePath;
         _stateStore.Save(state);
     }
 

@@ -17,7 +17,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly IRecentConversionStore _recentConversionStore;
     private readonly IRecentPathStore _recentPathStore;
 
-    private string? _selectedPdfPath;
+    private string? _selectedSourcePath;
     private bool _useOcr;
     private OcrEngineOptionViewModel? _selectedOcrEngine;
     private string? _googleVisionApiKey;
@@ -26,7 +26,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private string? _naverClovaEndpoint;
     private string? _naverClovaSecret;
     private int _progressValue;
-    private string _statusMessage = "PDF 파일을 선택해 주세요.";
+    private string _statusMessage = "PDF 또는 이미지 파일을 선택해 주세요.";
     private bool _isBusy;
     private string _resultSummary = "아직 변환을 시작하지 않았습니다.";
     private string? _selectedOutputDirectory;
@@ -83,11 +83,11 @@ public sealed class MainWindowViewModel : ObservableObject
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder, () => !string.IsNullOrWhiteSpace(OutputDirectory));
         SaveOcrSettingsCommand = new RelayCommand(SaveOcrSettings);
 
-        var recentPath = _recentPathStore.GetLastSelectedPdfPath();
+        var recentPath = _recentPathStore.GetLastSelectedSourcePath();
         if (!string.IsNullOrWhiteSpace(recentPath))
         {
-            SelectedPdfPath = recentPath;
-            StatusMessage = "최근 선택한 PDF 경로를 복원했습니다.";
+            SelectedSourcePath = recentPath;
+            StatusMessage = "최근 선택한 파일 경로를 복원했습니다.";
         }
 
         SelectedOutputDirectory = _recentPathStore.GetLastSelectedOutputDirectory();
@@ -165,22 +165,27 @@ public sealed class MainWindowViewModel : ObservableObject
         set => SetProperty(ref _naverClovaSecret, value);
     }
 
-    public string? SelectedPdfPath
+    public string? SelectedSourcePath
     {
-        get => _selectedPdfPath;
+        get => _selectedSourcePath;
         private set
         {
-            if (SetProperty(ref _selectedPdfPath, value))
+            if (SetProperty(ref _selectedSourcePath, value))
             {
-                OnPropertyChanged(nameof(SelectedPdfName));
+                OnPropertyChanged(nameof(SelectedSourceName));
                 OnStateChanged();
+
+                if (IsImageFile(value))
+                {
+                    UseOcr = true; // Use OCR by default for images
+                }
             }
         }
     }
 
-    public string SelectedPdfName => string.IsNullOrWhiteSpace(SelectedPdfPath)
+    public string SelectedSourceName => string.IsNullOrWhiteSpace(SelectedSourcePath)
         ? "선택된 파일 없음"
-        : Path.GetFileName(SelectedPdfPath);
+        : Path.GetFileName(SelectedSourcePath);
 
     public bool UseOcr
     {
@@ -243,37 +248,37 @@ public sealed class MainWindowViewModel : ObservableObject
     }
 
     public bool CanStartConversion => !IsBusy &&
-                                      !string.IsNullOrWhiteSpace(SelectedPdfPath) &&
+                                      !string.IsNullOrWhiteSpace(SelectedSourcePath) &&
                                       OutputFormats.Any(item => item.IsSelected);
 
     private Task BrowseFileAsync()
     {
         try
         {
-            var selectedPath = _fileDialogService.PickPdfFile(GetInitialPdfDirectory());
+            var selectedPath = _fileDialogService.PickSourceFile(GetInitialSourceDirectory());
             if (string.IsNullOrWhiteSpace(selectedPath))
             {
                 return Task.CompletedTask;
             }
 
-            SelectedPdfPath = selectedPath;
+            SelectedSourcePath = selectedPath;
 
             try
             {
-                _recentPathStore.SaveLastSelectedPdfPath(selectedPath);
+                _recentPathStore.SaveLastSelectedSourcePath(selectedPath);
             }
             catch (Exception ex)
             {
-                StatusMessage = "PDF 파일은 선택되었지만 최근 경로 저장에 실패했습니다.";
+                StatusMessage = "파일은 선택되었지만 최근 경로 저장에 실패했습니다.";
                 ResultSummary = ex.Message;
                 return Task.CompletedTask;
             }
 
-            StatusMessage = "변환할 PDF 파일을 선택했습니다.";
+            StatusMessage = IsImageFile(selectedPath) ? "변환할 이미지 파일을 선택했습니다." : "변환할 PDF 파일을 선택했습니다.";
         }
         catch (Exception ex)
         {
-            StatusMessage = "PDF 파일 선택 중 오류가 발생했습니다.";
+            StatusMessage = "파일 선택 중 오류가 발생했습니다.";
             ResultSummary = ex.Message;
         }
 
@@ -318,7 +323,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private async Task StartConversionAsync()
     {
-        if (!CanStartConversion || SelectedPdfPath is null)
+        if (!CanStartConversion || SelectedSourcePath is null)
         {
             return;
         }
@@ -339,7 +344,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
             var job = new ConversionJob
             {
-                SourceFilePath = SelectedPdfPath,
+                SourceFilePath = SelectedSourcePath,
                 TargetFormats = selectedFormats,
                 OutputDirectory = SelectedOutputDirectory,
                 UseOcr = UseOcr,
@@ -365,7 +370,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 RecentConversions.Insert(0, new RecentConversionItem
                 {
                     ConvertedAt = DateTimeOffset.Now,
-                    SourceFileName = Path.GetFileName(SelectedPdfPath),
+                    SourceFileName = Path.GetFileName(SelectedSourcePath),
                     OutputDirectory = OutputDirectory,
                     Summary = result.SummaryMessage,
                 });
@@ -438,17 +443,24 @@ public sealed class MainWindowViewModel : ObservableObject
         }
     }
 
-    private string? GetInitialPdfDirectory()
+    private string? GetInitialSourceDirectory()
     {
-        if (!string.IsNullOrWhiteSpace(SelectedPdfPath))
+        if (!string.IsNullOrWhiteSpace(SelectedSourcePath))
         {
-            var selectedPdfDirectory = Path.GetDirectoryName(SelectedPdfPath);
-            if (!string.IsNullOrWhiteSpace(selectedPdfDirectory))
+            var selectedSourceDirectory = Path.GetDirectoryName(SelectedSourcePath);
+            if (!string.IsNullOrWhiteSpace(selectedSourceDirectory))
             {
-                return selectedPdfDirectory;
+                return selectedSourceDirectory;
             }
         }
 
         return SelectedOutputDirectory;
+    }
+
+    private static bool IsImageFile(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return false;
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext is ".jpg" or ".jpeg" or ".png" or ".bmp" or ".gif" or ".tiff";
     }
 }

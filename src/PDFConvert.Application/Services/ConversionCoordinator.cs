@@ -28,20 +28,20 @@ public sealed class ConversionCoordinator : IConversionCoordinator
     {
         if (!File.Exists(job.SourceFilePath))
         {
-            throw new FileNotFoundException("선택한 PDF 파일을 찾을 수 없습니다.", job.SourceFilePath);
+            throw new FileNotFoundException("선택한 파일을 찾을 수 없습니다.", job.SourceFilePath);
         }
 
-        progress.Report(new ConversionProgress(ConversionStatus.Validating, 10, "PDF 파일을 확인하는 중입니다."));
+        progress.Report(new ConversionProgress(ConversionStatus.Validating, 10, "파일을 확인하는 중입니다."));
 
         var outputDirectory = _outputPathResolver.GetOutputDirectory(job.SourceFilePath, job.OutputDirectory);
         Directory.CreateDirectory(outputDirectory);
 
-        progress.Report(new ConversionProgress(ConversionStatus.Analyzing, 35, "PDF에서 텍스트를 추출하는 중입니다."));
+        progress.Report(new ConversionProgress(ConversionStatus.Analyzing, 35, "파일에서 텍스트를 추출하는 중입니다."));
         var document = await _pdfTextExtractor.ExtractAsync(job.SourceFilePath, job.UseOcr, job.OcrEngineKind, cancellationToken);
 
         if (document.Pages.Count == 0)
         {
-            throw new InvalidOperationException("PDF에서 변환 가능한 텍스트를 찾지 못했습니다.");
+            throw new InvalidOperationException("파일에서 변환 가능한 텍스트를 찾지 못했습니다.");
         }
 
         progress.Report(new ConversionProgress(ConversionStatus.Converting, 60, "선택한 형식의 파일을 생성하는 중입니다."));

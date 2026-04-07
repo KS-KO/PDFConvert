@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="PDF Converter"
+        Title="PDF/Image Converter"
         Width="1200"
         Height="760"
         MinWidth="980"
@@ -21,10 +21,10 @@
         <StackPanel Grid.Row="0">
             <TextBlock FontSize="26"
                        FontWeight="SemiBold"
-                       Text="PDF to Office/Slides Converter" />
+                       Text="PDF/Image to Office/Slides Converter" />
             <TextBlock Margin="0,8,0,0"
                        Foreground="#5F6B7A"
-                       Text=".NET 9 x64 PDF conversion program based on WPF MVVM" />
+                       Text=".NET 9 x64 PDF and image conversion program based on WPF MVVM" />
         </StackPanel>
 
         <Grid Grid.Row="2">
@@ -51,21 +51,21 @@
                         <StackPanel>
                             <TextBlock FontSize="18"
                                        FontWeight="SemiBold"
-                                       Text="1. Select PDF" />
+                                       Text="1. Select File (PDF or Image)" />
                             <TextBlock Margin="0,14,0,4"
                                        Text="Selected file" />
                             <TextBlock FontWeight="SemiBold"
-                                       Text="{Binding SelectedPdfName}" />
+                                       Text="{Binding SelectedSourceName}" />
                             <TextBlock Margin="0,12,0,0"
                                        Foreground="#5F6B7A"
                                        TextWrapping="Wrap"
-                                       Text="{Binding SelectedPdfPath}" />
+                                       Text="{Binding SelectedSourcePath}" />
 
                             <Button Margin="0,20,0,0"
                                     Padding="14,10"
                                     HorizontalAlignment="Left"
                                     Command="{Binding BrowseFileCommand}"
-                                    Content="Select PDF File" />
+                                    Content="Select File" />
 
                             <TextBlock Margin="0,18,0,4"
                                        Text="Output folder" />

@@ -2,8 +2,8 @@ namespace PDFConvert.Application.Interfaces;
 
 public interface IRecentPathStore
 {
-    string? GetLastSelectedPdfPath();
+    string? GetLastSelectedSourcePath();
     string? GetLastSelectedOutputDirectory();
-    void SaveLastSelectedPdfPath(string pdfPath);
+    void SaveLastSelectedSourcePath(string sourcePath);
     void SaveLastSelectedOutputDirectory(string outputDirectory);
 }
